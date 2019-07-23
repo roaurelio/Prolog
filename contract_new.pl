@@ -17,34 +17,45 @@ requires(kitchen,  [[c1, carpentry, 11], [p1, plumbing, 2], [p2, plumbing, 1], [
 % Assignments: lista de atribuições de tarefas
 % [TaskName, Person]
 
-existWorker(Worker,[[Worker,_]]).
-existWorker(Worker,[_|L]) :- existWorker(Worker,L).
-
-
 findElement(X,[X|_]).
 findElement(X,[_|L]) :- findElement(X,L).
 
-insertElement([],[X],[X]).
-insertElement([[H,H2]|T],[[X,X2]],[[H,H2]|Y]) :-
-    H \== X,
-    insertElement(T,[[X,X2]],Y).
+%------------%
+%-- Worker --%
+%------------%
 
 findWorker(Skill,Worker) :-
     skills(Worker, L),
     findElement(Skill, L).
 
-findInTaskList([[_, TaskType, TaskTime]], W) :-
+findWorkerInTaskList([[_, TaskType, TaskTime]], W) :-
     findWorker(TaskType,Worker),
     W = [Worker, TaskTime].
 
-findInTaskList([[_,TaskType,TaskTime]|X], W) :-
+
+
+findWorkerInTaskList([[_,TaskType,TaskTime]|X], W) :-
     findWorker(TaskType, Worker),
-    findInTaskList(X,L),
-    insertElement(L,X,L),
+    findWorkerInTaskList(X,L),
     W = [[Worker, TaskTime],L].
 
-workers(Job,W):-
+%----------------%
+%-- Assignment --%
+%----------------%
+
+findAssignmentInTaskList([[TaskName, TaskType, _]], A) :-
+    findWorker(TaskType,Worker),
+    A = [TaskName, Worker].
+
+findAssignmentInTaskList([[TaskName,TaskType,_]|X], A) :-
+    findWorker(TaskType, Worker),
+    findAssignmentInTaskList(X,L),
+    A = [[TaskName, Worker],L].
+
+
+workers(Job,W,A):-
     requires(Job, TaskList),
-    findInTaskList(TaskList, W).
+    findWorkerInTaskList(TaskList, W),
+    findAssignmentInTaskList(TaskList, W, A).
 
 
