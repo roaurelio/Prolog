@@ -37,6 +37,14 @@ findWorkerInTaskList([[_,TaskType,TaskTime]|X], W) :-
     findWorkerInTaskList(X,L),
     W = [[Worker, TaskTime],L].
 
+findTimeTask([[_,_,TaskTime]],[[_, TaskTime]]).
+
+findTimeTask([[_,_,TaskTime]],[[_, TaskTime]|W]):-
+    findTimeTask([[_,_,TaskTime]], W).
+
+
+
+
 %----------------%
 %-- Assignment --%
 %----------------%
