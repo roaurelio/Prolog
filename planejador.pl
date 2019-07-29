@@ -111,11 +111,18 @@ plan0(S0,[G|Y],P,S):-
     action(A,[X|L],E),
     pertence(X,S0),
     listPertence(L,S0),
-    not(pertence(add(G),E)),
-    not(pertence(G,S0)),
+    not(pertence(add(G),E)),%não pertence aos efeitos da ação
+    not(pertence(G,S0)),    %não pertence à lista de objetivos
     processEffectList(E,S0,S1),
     plan0(S1,[G|Y],P0,S),
     P = [A|P0].
+
+naoPertence([X], L, [X]) :- not(pertence(X,L)).
+naoPertence([X|Y],L,S) :-
+    not(pertence(X,L)),
+    naoPertence(Y, L, S1),
+    S = [X|S1].
+
 
 %planning(S,G,P,F)
 plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
