@@ -154,7 +154,7 @@ naoPertence([X|Y],L,S) :-
 
 
 %planning(S,G,P,F)
-%plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
+plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
 plan(S0,G,P,F) :-
     plan0(S0,G,P0,S),
     plan(S,G,P1,F),
