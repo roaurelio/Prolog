@@ -83,8 +83,13 @@ avaliaGoal([X|Y], S, F) :-
     avaliaGoal(Y,S,F0),
     F = [X|F0].
 
-
+%objetivo já está no estado
 plan0(S0,[G],[],S0):- pertence(G,S0).
+plan0(S0,[G|L],P,S0) :-
+      pertence(G,S0),
+      plan0(S0,L,P,S0).
+% objetivo está na lista de efeitos da ação e estado atende
+% pré-requisitos
 plan0(S0,[G],P,S) :-
     action(A,PC,E),
     pertence(add(G),E),
@@ -93,36 +98,37 @@ plan0(S0,[G],P,S) :-
     P = [A].
 plan0(S0,[G|L],P,S) :-
     action(A,PC,E),
-    (   pertence(add(G),E) ; pertence(G,S0)),
+    pertence(add(G),E),
     listPertence(PC,S0),
     processEffectList(E,S0,S1),
     plan0(S1,L,P0,S),
     P = [A|P0].
+% Busca ação com mesmo 'estado' da máquina, cujo estado atenda
+% pré-requisitos da ação
 plan0(S0,[G],P,S):-
-    action(A,[X|L],E),
-    pertence(X,S0),
+    action(A,L,E),
     listPertence(L,S0),
     not(pertence(add(G),E)),
     not(pertence(G,S0)),
     processEffectList(E,S0,S1),
+    findGoalInAction(S1,G),
     plan0(S1,[G],P0,S),
     P = [A|P0].
 plan0(S0,[G|Y],P,S):-
-    action(A,[X|L],E),
-    pertence(X,S0),
+    action(A,L,E),
     listPertence(L,S0),
     not(pertence(add(G),E)),%não pertence aos efeitos da ação
     not(pertence(G,S0)),    %não pertence à lista de objetivos
     processEffectList(E,S0,S1),
+    findGoalInAction(S1,G),
     plan0(S1,[G|Y],P0,S),
     P = [A|P0].
 
-naoPertence([X], L, [X]) :- not(pertence(X,L)).
-naoPertence([X|Y],L,S) :-
-    not(pertence(X,L)),
-    naoPertence(Y, L, S1),
-    S = [X|S1].
 
+findGoalInAction(S,G):-
+    action(_,L,E),
+    listPertence(L,S),
+    pertence(add(G),E).
 
 %planning(S,G,P,F)
 plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
