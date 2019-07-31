@@ -87,25 +87,25 @@ avaliaGoal([X|Y], S, F) :-
 plan0(S0,[G],[],S0,[G]):- pertence(G,S0).
 plan0(S0,[G],P,S,[G])  :-    %%somente um objetivo
     action(A,PC,E),
-    pertence(add(G),E),       %o objetivo pertence lista dos efeitos da aï¿½ï¿½o
-    listPertence(PC,S0),      %estado atual atende prï¿½-requisito
+    pertence(add(G),E),       %o objetivo pertence lista dos efeitos da ação
+    listPertence(PC,S0),      %estado atual atende pré-requisito
     processEffectList(E,S0,S),%aplicar efeitos no estado atual
-    P = [A].                  %adicionar aï¿½ï¿½o
+    P = [A].                  %adicionar ação
 plan0(S0,[G|L],P,S,F) :-          %%lista de objetivos
     action(A,PC,E),
-    (pertence(add(G),E);         %objetivo pertence a lista dos efeitos da aï¿½ï¿½o
+    (pertence(add(G),E);         %objetivo pertence a lista dos efeitos da ação
     pertence(G,S0)),             %ou objetivo pertence ao estado atual
-    listPertence(PC,S0),         %e estado atual atende prï¿½-requisitos
+    listPertence(PC,S0),         %e estado atual atende pré-requisitos
     processEffectList(E,S0,S1),  %aplicar efeitos no estado atual
     plan0(S1,L,P0,S,F0),
     P = [A|P0],
-    F = [G|F0].                  %adiciona aï¿½ï¿½o
+    F = [G|F0].                  %adiciona ação
 plan0(S0,[G],P,S,[G]):-             %%somente um objetivo
     action(A,[X|L],E),
-    pertence(X,S0),              %estado da mï¿½o pertence aos prï¿½-requisitos da aï¿½ï¿½o
-    listPertence(L,S0),          %estado atende prï¿½-requisitos
-    not(pertence(add(G),E)),     %objetivo nï¿½o pertence ï¿½ lista de efeitos
-    not(pertence(G,S0)),         %objetivo nï¿½o pertence ao estado atual
+    pertence(X,S0),              %estado da mão pertence aos pré-requisitos da ação
+    listPertence(L,S0),          %estado atende pré-requisitos
+    not(pertence(add(G),E)),     %objetivo não pertence à lista de efeitos
+    not(pertence(G,S0)),         %objetivo não pertence ao estado atual
     processEffectList(E,S0,S1),  %aplica efeito no estado atual
     plan0(S1,[G],P0,S),
     P = [A|P0].
@@ -113,8 +113,8 @@ plan0(S0,[G|Y],P,S,F):-
     action(A,[X|L],E),
     pertence(X,S0),
     listPertence(L,S0),
-    not(pertence(add(G),E)),%nï¿½o pertence aos efeitos da aï¿½ï¿½o
-    not(pertence(G,S0)),    %nï¿½o pertence ï¿½ lista de objetivos
+    not(pertence(add(G),E)),%não pertence aos efeitos da ação
+    not(pertence(G,S0)),    %não pertence à lista de objetivos
     processEffectList(E,S0,S1),
     plan0(S1,[G|Y],P0,S,F0),
     P = [A|P0],
@@ -122,10 +122,10 @@ plan0(S0,[G|Y],P,S,F):-
 plan0(S0,[G|Y],P,S,F):-
     action(_,[X|L],E),
     pertence(X,S0),
-    not(listPertence(L,S0)),% nï¿½o pertence ao estado atual
-    not(pertence(add(G),E)),% nï¿½o pertence aos efeitos da aï¿½ï¿½o
-    not(pertence(G,S0)),    % nï¿½o pertence ï¿½ lista de objetivos
-    naoPertence(L,S0,NP),   % obtem lista com itens da aï¿½ï¿½o que nï¿½o pertencem a S
+    not(listPertence(L,S0)),% não pertence ao estado atual
+    not(pertence(add(G),E)),% não pertence aos efeitos da ação
+    not(pertence(G,S0)),    % não pertence à lista de objetivos
+    naoPertence(L,S0,NP),   % obtem lista com itens da ação que não pertencem a S
     copiarLista(NP,X,Y,S1,P1),
     plan0(S1,[G|Y],P2,S2,F0),
     plan0(S2,F,P3,S,F1),
@@ -152,13 +152,9 @@ naoPertence([X|Y],L,S) :-
     naoPertence(Y, L, S1),
     S = [X|S1].
 
-findGoalInAction(S,G):-
-    action(_,L,E),
-    listPertence(L,S),
-    pertence(add(G),E).
 
 %planning(S,G,P,F)
-%plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
+plan(S,G,P,F) :- avaliaGoal(G,S,F),P=[].
 plan(S0,G,P,F) :-
     plan0(S0,G,P0,S),
     plan(S,G,P1,F),
